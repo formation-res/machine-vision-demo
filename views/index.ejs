@@ -1,0 +1,10 @@
+<%- include('_header') %>
+
+<h1>welcome!</h1>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" name="image" accept="image/*">
+  <button type="submit">Upload Image</button>
+</form>
+
+<%- include('_footer') %>
