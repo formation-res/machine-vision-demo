@@ -1,24 +1,37 @@
-// Import necessary modules
 import express from "express";
 import path from "path";
 import multer from "multer";
-import { processImage } from "./openai-test.js";
+import { PreciseResponse } from "./openai-test.js";
 import { fileURLToPath } from 'url';
-// import router from "./routes.js";
+import fs from 'fs';
+import https from 'https';
 
 const app = express();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const options = {
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
+};
 
 app.set("port", process.env.PORT || 3000);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-// Serve static files (e.g., CSS, images) from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// app.use(router);
+app.get('/', (req, res) => {
+    res.render('index');
+});
+
+const PORT = process.env.PORT || 3000;
+const HOST = '10.1.7.160';
+
+https.createServer(options, app).listen(PORT, HOST, () => {
+    console.log(`Server started on https://${HOST}:${PORT}`);
+});
 
 // Configure multer for handling file uploads
 const storage = multer.diskStorage({
@@ -47,7 +60,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     const imageUrl = `public/uploads/${req.file.filename}`; // Adjust based on your file storage
 
     // Process image using OpenAI API
-    const result = await processImage(imageUrl);
+    const result = await PreciseResponse(imageUrl);
 
     // Render 'result.ejs' with the result data
     res.render('result', { imageUrl, result });
@@ -57,11 +70,31 @@ app.post('/upload', upload.single('image'), async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
 
+app.post('/upload-photo', async (req, res) => {
+  try {
+      const photoData = req.body.photo;
+      if (!photoData) {
+          return res.status(400).send('No photo data.');
+      }
+
+      // Convert base64 to buffer
+      const buffer = Buffer.from(photoData.split(',')[1], 'base64');
+      const filePath = `public/uploads/photo_${Date.now()}.png`;
+
+      // Save the photo to the server
+      fs.writeFileSync(filePath, buffer);
+
+      // Process image using OpenAI API
+      const result = await PreciseResponse(filePath);
+
+      // Render 'result.ejs' with the result data
+      res.render('result', { imageUrl: filePath, result });
+  } catch (error) {
+      console.error("Error processing photo:", error);
+      res.status(500).send('Error processing photo.');
+  }
+});
 
 
 // import express from "express";
@@ -129,4 +162,3 @@ app.listen(PORT, () => {
 // app.listen(PORT, () => {
 //   console.log(`Server started on port ${PORT}`);
 // });
-
