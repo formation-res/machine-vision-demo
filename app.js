@@ -22,8 +22,80 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, '')));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+let uploadedFiles = [];
+
+// Middleware to track uploaded files
+app.use((req, res, next) => {
+    res.locals.uploadedFiles = uploadedFiles;
+    next();
+});
+
+// Configure multer for handling file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/');
+    },
+    filename: function (req, file, cb) {
+        const filename = Date.now() + path.extname(file.originalname);
+        uploadedFiles.push(`public/uploads/${filename}`);
+        cb(null, filename);
+    },
+});
+
+const upload = multer({ storage: storage });
+
+const deleteFiles = (files) => {
+    files.forEach(file => {
+        fs.unlink(file, (err) => {
+            if (err) console.error(`Error deleting file ${file}:`, err);
+        });
+    });
+};
+
+// Route to handle home page
 app.get('/', (req, res) => {
+    deleteFiles(uploadedFiles);
+    uploadedFiles = [];
     res.render('index');
+});
+
+// Route to handle file upload and processing
+app.post('/upload', upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).send('No files were uploaded.');
+        }
+
+        const imageUrl = `public/uploads/${req.file.filename}`;
+        const result = await PreciseResponse(imageUrl);
+
+        res.render('result', { imageUrl, result });
+    } catch (error) {
+        console.error("Error processing image:", error);
+        res.status(500).send('Error processing image.');
+    }
+});
+
+app.post('/upload-photo', async (req, res) => {
+    try {
+        const photoData = req.body.photo;
+        if (!photoData) {
+            return res.status(400).send('No photo data.');
+        }
+
+        const buffer = Buffer.from(photoData.split(',')[1], 'base64');
+        const filePath = `public/uploads/photo_${Date.now()}.png`;
+
+        fs.writeFileSync(filePath, buffer);
+        uploadedFiles.push(filePath);
+
+        const result = await PreciseResponse(filePath);
+
+        res.render('result', { imageUrl: filePath, result });
+    } catch (error) {
+        console.error("Error processing photo:", error);
+        res.status(500).send('Error processing photo.');
+    }
 });
 
 const PORT = process.env.PORT || 3000;
@@ -33,68 +105,8 @@ https.createServer(options, app).listen(PORT, HOST, () => {
     console.log(`Server started on https://${HOST}:${PORT}`);
 });
 
-// Configure multer for handling file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'public/uploads/'); // Ensure 'public/uploads' directory exists
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname)); // Ensure unique filenames
-    },
- });
-  
-
-const upload = multer({ storage: storage });
-
-app.get('/', (req, res) => {        //NEW
-    res.render('index');
-  });
-
-// Route to handle file upload and processing
-app.post('/upload', upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).send('No files were uploaded.');
-    }
-
-    const imageUrl = `public/uploads/${req.file.filename}`; // Adjust based on your file storage
-
-    // Process image using OpenAI API
-    const result = await PreciseResponse(imageUrl);
-
-    // Render 'result.ejs' with the result data
-    res.render('result', { imageUrl, result });
-  } catch (error) {
-    console.error("Error processing image:", error);
-    res.status(500).send('Error processing image.');
-  }
-});
 
 
-app.post('/upload-photo', async (req, res) => {
-  try {
-      const photoData = req.body.photo;
-      if (!photoData) {
-          return res.status(400).send('No photo data.');
-      }
-
-      // Convert base64 to buffer
-      const buffer = Buffer.from(photoData.split(',')[1], 'base64');
-      const filePath = `public/uploads/photo_${Date.now()}.png`;
-
-      // Save the photo to the server
-      fs.writeFileSync(filePath, buffer);
-
-      // Process image using OpenAI API
-      const result = await PreciseResponse(filePath);
-
-      // Render 'result.ejs' with the result data
-      res.render('result', { imageUrl: filePath, result });
-  } catch (error) {
-      console.error("Error processing photo:", error);
-      res.status(500).send('Error processing photo.');
-  }
-});
 
 
 // import express from "express";
