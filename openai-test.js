@@ -211,7 +211,7 @@ export async function PreciseResponse(imagePath) {
           role: 'user',
           content: [
             { type: 'text',
-              text: `If there is any major and relevant text in the image, including and limited to license plates, labels, and codes, please respond with the type of text (from the given options), followed by a colon, then a space, then the most important text in the image. For example, the response should be in a format similar to this. "License plate: 1ABC234". If there is too much relevant text (over 15 words), or none of the text is much more important than the rest of the image, respond exactly with "No relevant text." This text should generally be no more than 5 words long.`
+              text: `If there is any major and relevant text in the image, including and limited to license plates, labels, and codes, please respond with the type of text (from the given options), followed by a colon, then a space, then the most important text in the image. For example, the response should be in a format similar to this. "License plate: 1ABC234". If there is too much relevant text (over 15 words), respond with exactly "too many details". If none of the text is much more important than the rest of the image, respond exactly with "No relevant text." This text should generally be no more than 5 words long.`
             },
             
             {
