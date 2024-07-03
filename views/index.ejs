@@ -3,8 +3,8 @@
 <h1>Welcome!</h1>
 
 <form action="/upload" method="POST" enctype="multipart/form-data">
-  <input type="file" name="image" accept="image/*">
-  <button type="submit">Upload Image</button>
+  <input type="file" name="image" accept="image/*" title="upload photo">
+  <button type="submit">Enter</button>
 </form>
 
 <head>
@@ -13,27 +13,27 @@
   <title>Take Photo and Upload</title>
 </head>
 <body>
-  <h1>Take a Photo and Upload</h1>
+  <!-- <h1>Take a Photo and Upload</h1> -->
   
-  <form id="uploadForm" action="/upload-photo" method="post">
+  <!-- <form id="uploadForm" action="/upload-photo" method="post">
       <input type="hidden" name="photo" id="photoData">
       <button type="submit" id="submitPhoto" style="display:none;">Submit Photo</button>
-  </form>
+  </form> -->
 
-  <input type="file" id="fileInput" accept="image/*" capture="camera" style="display:none;">
+  <!-- <input type="file" id="fileInput" accept="image/*" capture="camera" style="display:none;">
   <button id="takePhoto">Take Photo</button>
-  <canvas id="canvas" style="display:none;"></canvas>
+  <canvas id="canvas" style="display:none;"></canvas> -->
 
   <script>
-      const takePhotoButton = document.getElementById('takePhoto');
+    //   const takePhotoButton = document.getElementById('takePhoto');
       const canvas = document.getElementById('canvas');
       const photoData = document.getElementById('photoData');
-      const submitPhotoButton = document.getElementById('submitPhoto');
+    //   const submitPhotoButton = document.getElementById('submitPhoto');
       const fileInput = document.getElementById('fileInput');
 
-      takePhotoButton.addEventListener('click', () => {
-          fileInput.click();
-      });
+    //   takePhotoButton.addEventListener('click', () => {
+    //       fileInput.click();
+    //   });
 
       fileInput.addEventListener('change', async (event) => {
           const file = event.target.files[0];
@@ -74,12 +74,12 @@
           reader.readAsDataURL(file);
       });
 
-      uploadForm.addEventListener('submit', (e) => {
-          if (!photoData.value) {
-              e.preventDefault();
-              alert('Please take a photo first.');
-          }
-      });
+    //   uploadForm.addEventListener('submit', (e) => {
+    //       if (!photoData.value) {
+    //           e.preventDefault();
+    //           alert('Please take a photo first.');
+    //       }
+    //   });
   </script>
 </body>
 

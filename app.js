@@ -19,7 +19,7 @@ app.set("port", process.env.PORT || 3000);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '')));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.get('/', (req, res) => {
@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const HOST = '10.1.7.160';
+const HOST = '0.0.0.0';
 
 https.createServer(options, app).listen(PORT, HOST, () => {
     console.log(`Server started on https://${HOST}:${PORT}`);
