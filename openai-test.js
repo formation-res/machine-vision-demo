@@ -288,11 +288,11 @@ function parseResponse(inputString) {
 
   //checking for made up icons/colors
   if(!icons.includes(icon)) {
-    console.log("invalid icon, switching to default.");
+    console.log(`invalid icon ${icon}, switching to default.`);
     icon = "Default";
   }
   if(!colors.includes(color)) {
-    console.log("invalid color, switching to default.");
+    console.log(`invalid color ${color}, switching to default.`);
     color = "Default";
   }
 
