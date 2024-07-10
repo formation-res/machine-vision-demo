@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ML5 Workshop</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ml5@latest/dist/ml5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/universal-sentence-encoder"></script>
+    <script src="script.js" defer></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      #inputContainer {
+        margin-bottom: 20px;
+      }
+      </style>
+  </head>
+  <body>
+    <div id="inputContainer">
+        <label for="stringInput">Enter a string:</label>
+        <input type="text" id="stringInput">
+        <button onclick="addString()">Add String</button>
+    </div>
+    <div>
+        <h2>Stored Strings:</h2>
+        <ul id="stringList"></ul>
+    </div>
+</body>
+  <body>
+    
+    <div>
+        <h1>ML5 Workshop</h1>
+    </div>
+    <div>
+      <label for="file">Classify with ml5</label>
+      <input type="file" accept="image/*;capture=camera" id="file" />
+    </div>
+
+    <div id="message">Please wait...loading models...</div>
+    <div id="message2">Please wait...loading models...</div>
+
+    <div><img id="img"></div>
+    <body>
+      <h2>Classify with Python</h2>
+      <input type="file" id="fileInput" accept=".jpg, .jpeg, .png">
+      <button onclick="classifyWithPython()">Upload</button>
+      <p id="status"></p>
+  
+  </body>
+  </body>
+</html>
