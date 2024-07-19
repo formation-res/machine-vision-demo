@@ -42,30 +42,21 @@ iconOptions = [
   'DiagnosticTool', 'AirCompressor', 'Drain', 'FluidDrop', 'WaterSupply', 'WaterBottle',
   'WaterGlass', 'Drinks', 'Cocktail', 'WineBottle'
 ]
+colorOptions = [
+    'Default', 'LightGrey', 'Grey', 'Black', 'LightGreen', 'LightGreenAlt', 'Green', 'GreenAlt',
+    'DarkGreen', 'AquaMarine', 'Turquoise', 'LightBlue', 'LightBlueAlt', 'Blue', 'DarkBlue',
+    'Yellow', 'Orange', 'DarkOrange', 'Red', 'DarkRed', 'DarkMagenta', 'White', 'BlueMidnight',
+    'BlueSky', 'BlueLavender', 'GraySilver', 'GraySteel', 'GraySlate', 'GreenMoss', 'GreenTurquoise',
+    'GreenMint', 'GreenSoft', 'GreenVibrant', 'GreenFresh', 'RedDarkCrimson', 'RedFire', 'RedSalmon',
+    'OrangePeach', 'OrangeAmber', 'OrangeRust'
+]
 
 textModel = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 iconEmbeddings = textModel.encode(iconOptions)
+colorEmbeddings = textModel.encode(colorOptions)
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
-
-
-def get_best_icon(description):
-
-    descriptionEmbedding = textModel.encode(description)
-
-    descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
-
-    similarities = cosine_similarity(descriptionVector, iconEmbeddings)
-    similarities.flatten()
-
-    mostSimilar = -1
-    index = -1
-    for i in range (0, len(similarities[0])):
-        if similarities[0][i] > mostSimilar:
-            index = i
-            mostSimilar = similarities[0][i]
-    return iconOptions[index]
 
 def process_image(img_path):
 
@@ -87,24 +78,69 @@ def process_image(img_path):
     # Resize the image
     resized_image = raw_image.resize((new_width, new_height))
     return resized_image
+
+def get_best_icon(description):
+
+    descriptionEmbedding = textModel.encode(description)
+
+    descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
+
+    similarities = cosine_similarity(descriptionVector, iconEmbeddings)
+    similarities.flatten()
+
+    mostSimilar = -1
+    index = -1
+    for i in range (0, len(similarities[0])):
+        if similarities[0][i] > mostSimilar:
+            index = i
+            mostSimilar = similarities[0][i]
+    return iconOptions[index]
     
+def get_best_color(description):
+    descriptionEmbedding = textModel.encode(description)
 
+    descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
 
-def predict(img_path):
+    similarities = cosine_similarity(descriptionVector, colorEmbeddings)
+    similarities.flatten()
 
+    mostSimilar = -1
+    index = -1
+    for i in range (0, len(similarities[0])):
+        if similarities[0][i] > mostSimilar:
+            index = i
+            mostSimilar = similarities[0][i]
+    return colorOptions[index]
+
+def get_image_description(img_path):
+    
     image = process_image(img_path)
 
     #get description of image
     print("getting icon description...")
     inputs = processor(image, "the main focus of this image is ", return_tensors="pt")
     out = model.generate(**inputs)
-    output = processor.decode(out[0], skip_special_tokens=True)[32:]
-    print("description: ", output)
+    description = processor.decode(out[0], skip_special_tokens=True)[32:]
+    print("description: ", description)
+
+    return description
+
+
+def predict(img_path):
+
+    #get image description
+    image_description = get_image_description(img_path)
+
+    #get title (right now, just image description)
+    title_prediction = image_description
 
     #get best icon from description
-    icon_prediction = get_best_icon(output)
+    icon_prediction = get_best_icon(image_description)
 
-    return icon_prediction
+    #get color from description
+    color_prediction = get_best_color(icon_prediction)
+
+    return "title: " + title_prediction + "<br>icon: " + icon_prediction + "<br>color: " + color_prediction
 
 
 
