@@ -8,15 +8,7 @@
     <link rel="stylesheet" href="style.css" />
 
     <script src="script.js" defer></script>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      #inputContainer {
-        margin-bottom: 20px;
-      }
-      </style>
+
   </head>
   <body>
     <div id="inputContainer">
@@ -29,13 +21,23 @@
         <ul id="stringList"></ul>
     </div>
 </body>
-  <body>
-  
+<body>
+  <div class="container">
     <h2>Generate Icon</h2>
-    <input type="file" id="fileInput" accept=".jpg, .jpeg, .png">
-    <button onclick="classify()">Upload</button>
+    <div class="button-group">
+      <input type="file" id="fileInput" accept=".jpg, .jpeg, .png">
+      <label for="fileInput">Choose Image</label>
+      <button id="startCameraButton" onclick="startCamera()">Take Photo</button>
+      <button id="capture" style="display: none;" onclick="capturePhoto()">Capture Photo</button>
+    </div>
     <p id="status"></p>
     <div id="message">Upload an image!</div>
+    <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <div id="image">
+      <img id="uploadedImage" src="" alt="Uploaded Image Preview" style="display: none;">
+    </div>
+  </div>
+</body>
 
-  </body>
 </html>

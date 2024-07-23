@@ -81,6 +81,25 @@ def process_image(img_path):
 
 def get_best_icon(description):
 
+    descriptionWords = description.split()
+
+    for word in descriptionWords[::-1]:
+
+        descriptionEmbedding = textModel.encode(word)
+
+        descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
+
+
+        similarities = cosine_similarity(descriptionVector, iconEmbeddings)
+        similarities.flatten()
+        threshold = .5
+
+        for i in range (0, len(similarities[0])):
+            if similarities[0][i] > threshold:
+                print("icon similar: ", word, "and", iconOptions[i], similarities[0][i])
+                #return iconOptions[i]
+
+
     descriptionEmbedding = textModel.encode(description)
 
     descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
@@ -96,12 +115,33 @@ def get_best_icon(description):
             mostSimilar = similarities[0][i]
     return iconOptions[index]
     
-def get_best_color(description):
-    descriptionEmbedding = textModel.encode(description)
+def get_best_color(description, icon):
 
-    descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
+    descriptionWords = description.split()
 
-    similarities = cosine_similarity(descriptionVector, colorEmbeddings)
+    for word in descriptionWords:
+
+        descriptionEmbedding = textModel.encode(word)
+
+        descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
+
+
+        similarities = cosine_similarity(descriptionVector, colorEmbeddings)
+        similarities.flatten()
+        threshold = .71
+
+        for i in range (0, len(similarities[0])):
+            if similarities[0][i] > threshold:
+                print("color similar: ", word, "and", colorOptions[i], similarities[0][i])
+                return colorOptions[i]
+    
+
+
+    iconEmbedding = textModel.encode(icon)
+
+    iconVector = np.array(iconEmbedding).reshape(1, -1)
+
+    similarities = cosine_similarity(iconVector, colorEmbeddings)
     similarities.flatten()
 
     mostSimilar = -1
@@ -110,6 +150,9 @@ def get_best_color(description):
         if similarities[0][i] > mostSimilar:
             index = i
             mostSimilar = similarities[0][i]
+    
+
+    
     return colorOptions[index]
 
 def get_image_description(img_path):
@@ -138,7 +181,7 @@ def predict(img_path):
     icon_prediction = get_best_icon(image_description)
 
     #get color from description
-    color_prediction = get_best_color(icon_prediction)
+    color_prediction = get_best_color(image_description, icon_prediction)
 
     return "title: " + title_prediction + "<br>icon: " + icon_prediction + "<br>color: " + color_prediction
 
