@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from PIL import Image
 from flask_cors import CORS
 import numpy as np
@@ -187,7 +187,7 @@ def predict(img_path):
 
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='.')
 CORS(app)  # This will enable CORS for all routes
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -196,6 +196,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
 @app.route('/classify', methods=['POST'])
 def classify():
@@ -204,7 +207,7 @@ def classify():
         return jsonify({'success': False, 'error': 'No file part in the request'}), 400
 
     file = request.files['file']
-    filepath = "uploads\\" + file.filename
+    filepath = "uploads/" + file.filename
 
     if file.filename == '':
         return jsonify({'success': False, 'error': 'No selected file'}), 400
