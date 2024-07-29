@@ -17,6 +17,9 @@
       <label for="fileInput">Choose Image</label>
       <button id="startCameraButton" onclick="startCamera()">Take Photo</button>
       <button id="capture" style="display: none;" onclick="capturePhoto()">Capture Photo</button>
+      <input type="file" id="fileInput2" onclick="" accept=".jpg, .jpeg, .png">
+      <label for="fileInput2">Upload OpenAI</label>
+      <button id="runOpenAIButton" onclick="classifyWithOpenAI()">Classify OpenAI</button>
     </div>
     <p id="status"></p>
     <div id="message">Upload an image!</div>

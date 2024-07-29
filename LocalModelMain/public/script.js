@@ -1,4 +1,5 @@
 const fileInput = document.getElementById('fileInput');
+const fileInput2 = document.getElementById('fileInput2');
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const captureButton = document.getElementById('capture');
@@ -81,6 +82,38 @@ async function classify(formData) {
   
 }
 
+async function classifyWithOpenAI() {
+
+  messageDiv.textContent = 'Classifying with OpenAI...';
+  const file = fileInput2.files[0];
+  const formData = new FormData();
+  formData.append('file', file);
+
+
+  //Call Python function via Flask API
+  try {
+    const response = await fetch('https://10.1.7.160:5500/classifyWithOpenAI', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    //collect results
+    const result = await response.json();
+    console.log(result.data);
+
+    //display results
+    message.innerHTML = `${result.data}`;
+
+  } catch (err) {
+    console.error('Error calling Python function:', err);
+  }
+  
+}
+
+//show image when uploaded
 document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('fileInput');
   const uploadedImage = document.getElementById('uploadedImage');
@@ -96,4 +129,16 @@ document.addEventListener('DOMContentLoaded', () => {
       uploadedImage.style.display = 'none';
     }
   });
+  fileInput2.addEventListener('change', () => {
+    const file = fileInput2.files[0];
+    if (file) {
+      const objectURL = URL.createObjectURL(file);
+      uploadedImage.src = objectURL;
+      uploadedImage.style.display = 'block';
+    } else {
+      uploadedImage.src = '';
+      uploadedImage.style.display = 'none';
+    }
+  });
 });
+
