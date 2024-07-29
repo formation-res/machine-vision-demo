@@ -168,7 +168,7 @@ def predict(img_path):
     #get color from description
     color_prediction = get_best_color(image_description, icon_prediction)
 
-    update_pete_pin(image_description, icon_prediction, color_prediction)
+    update_sophie_pin(image_description, icon_prediction, color_prediction)
 
     return "title: " + title_prediction + "<br>icon: " + icon_prediction + "<br>color: " + color_prediction
 
@@ -216,7 +216,7 @@ def update_pete_pin(description, icon, color):
 
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJuemRKZVlKVjVMeWVMQXJFR1hyN1FBIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIwNzA2MTcsImlhdCI6MTcyMTk4NDIxNywid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.tlopgl-Ye3230bo_OCWilOAMH1LPM1EbETGSckgjX39in6TYTSMXMxWDYszhpith29ZZdS_hk7dKrOL_2Xv-Dg',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJNdmk5OEp6RVdlNVcxVTF0aXkxVG1RIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIzMzE0NjksImlhdCI6MTcyMjI0NTA2OSwid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.PZ2KkYauMx9nCX5BSbZ3CG5zP7q97fpk-lzlWotiTXbolF1mmfP5jw-lmF84FgjqVzUTwkAdKsjGlDumSfShDg',
     }
 
     requests.put(url, json=json_payload, headers=headers)
@@ -227,7 +227,36 @@ def update_pete_pin(description, icon, color):
 
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJuemRKZVlKVjVMeWVMQXJFR1hyN1FBIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIwNzA2MTcsImlhdCI6MTcyMTk4NDIxNywid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.tlopgl-Ye3230bo_OCWilOAMH1LPM1EbETGSckgjX39in6TYTSMXMxWDYszhpith29ZZdS_hk7dKrOL_2Xv-Dg',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJNdmk5OEp6RVdlNVcxVTF0aXkxVG1RIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIzMzE0NjksImlhdCI6MTcyMjI0NTA2OSwid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.PZ2KkYauMx9nCX5BSbZ3CG5zP7q97fpk-lzlWotiTXbolF1mmfP5jw-lmF84FgjqVzUTwkAdKsjGlDumSfShDg',
+    }
+
+def update_sophie_pin(description, icon, color):
+
+    url = 'https://ahoy-berlin.tryformation.com/objects/legacy/points/pWUACfAPQ6Z0wOUNj51iig'
+
+    json_payload = {"latLon":{"lat":52.54108999811743,"lon":13.390482454878907},
+                    "connectedToId":"-HN8FcwaRyS7co7XIeIshw",
+                    "title":"testing door",
+                    "keywords":[],
+                    "fieldValueTags":[],
+                    "iconCategory":icon,
+                    "color":color,
+                    "shape":"TriangleDown"}
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJNdmk5OEp6RVdlNVcxVTF0aXkxVG1RIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIzMzE0NjksImlhdCI6MTcyMjI0NTA2OSwid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.PZ2KkYauMx9nCX5BSbZ3CG5zP7q97fpk-lzlWotiTXbolF1mmfP5jw-lmF84FgjqVzUTwkAdKsjGlDumSfShDg',
+    }
+
+    requests.put(url, json=json_payload, headers=headers)
+
+    url = 'https://ahoy-berlin.tryformation.com/objects/apply-changes'
+
+    json_payload = [{"objectId":"pWUACfAPQ6Z0wOUNj51iig","changes":[{"type":"SetDescription","content":description}]}]
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJNdmk5OEp6RVdlNVcxVTF0aXkxVG1RIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIzMzE0NjksImlhdCI6MTcyMjI0NTA2OSwid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.PZ2KkYauMx9nCX5BSbZ3CG5zP7q97fpk-lzlWotiTXbolF1mmfP5jw-lmF84FgjqVzUTwkAdKsjGlDumSfShDg',
     }
 
     requests.post(url, json=json_payload, headers=headers)

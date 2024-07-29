@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const HOST = '10.1.7.160';
+const HOST = '10.1.1.207';
 
 https.createServer(options, app).listen(PORT, HOST, () => {
   console.log(`Server started on https://${HOST}:${PORT}`);

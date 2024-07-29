@@ -60,7 +60,7 @@ async function classify(formData) {
 
   //Call Python function via Flask API
   try {
-    const response = await fetch('https://10.1.7.160:5500/classify', {
+    const response = await fetch('https://10.1.1.207:5500/classify', {
       method: 'POST',
       body: formData
     });
