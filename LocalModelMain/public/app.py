@@ -2,10 +2,10 @@ from flask import Flask, request, jsonify, send_from_directory
 from PIL import Image
 from flask_cors import CORS
 import numpy as np
-import os
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
+import requests
 
 
 iconOptions = [
@@ -81,24 +81,6 @@ def process_image(img_path):
 
 def get_best_icon(description):
 
-    descriptionWords = description.split()
-
-    for word in descriptionWords[::-1]:
-
-        descriptionEmbedding = textModel.encode(word)
-
-        descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
-
-
-        similarities = cosine_similarity(descriptionVector, iconEmbeddings)
-        similarities.flatten()
-        threshold = .5
-
-        for i in range (0, len(similarities[0])):
-            if similarities[0][i] > threshold:
-                print("icon similar: ", word, "and", iconOptions[i], similarities[0][i])
-                #return iconOptions[i]
-
 
     descriptionEmbedding = textModel.encode(description)
 
@@ -125,17 +107,19 @@ def get_best_color(description, icon):
 
         descriptionVector = np.array(descriptionEmbedding).reshape(1, -1)
 
-
         similarities = cosine_similarity(descriptionVector, colorEmbeddings)
         similarities.flatten()
-        threshold = .71
-
+        threshold = .5
+        mostSimilar = -1
+        index = -1
+        
         for i in range (0, len(similarities[0])):
-            if similarities[0][i] > threshold:
-                print("color similar: ", word, "and", colorOptions[i], similarities[0][i])
-                return colorOptions[i]
-    
-
+            if similarities[0][i] > mostSimilar:
+                index = i
+                mostSimilar = similarities[0][i]
+        if (mostSimilar > threshold):
+            print("good color found with", word)
+            return colorOptions[index]
 
     iconEmbedding = textModel.encode(icon)
 
@@ -151,13 +135,14 @@ def get_best_color(description, icon):
             index = i
             mostSimilar = similarities[0][i]
     
-
-    
     return colorOptions[index]
 
 def get_image_description(img_path):
     
-    image = process_image(img_path)
+    #image = process_image(img_path) can be used to shrink large images
+
+    image = Image.open(img_path)
+
 
     #get description of image
     print("getting icon description...")
@@ -183,18 +168,14 @@ def predict(img_path):
     #get color from description
     color_prediction = get_best_color(image_description, icon_prediction)
 
+    update_pete_pin(image_description, icon_prediction, color_prediction)
+
     return "title: " + title_prediction + "<br>icon: " + icon_prediction + "<br>color: " + color_prediction
 
 
 
 app = Flask(__name__, static_url_path='', static_folder='.')
 CORS(app)  # This will enable CORS for all routes
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
 
 @app.route('/')
 def index():
@@ -203,28 +184,16 @@ def index():
 @app.route('/classify', methods=['POST'])
 def classify():
     #find uploaded file
+
+    print("classifying")
+
     if 'file' not in request.files:
         return jsonify({'success': False, 'error': 'No file part in the request'}), 400
 
     file = request.files['file']
-    filepath = "uploads/" + file.filename
-
-    if file.filename == '':
-        return jsonify({'success': False, 'error': 'No selected file'}), 400
-
-    #temporarily save file
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-    file.save(file_path)
-
+    print("predicting")
     #get prediction
-    prediction = predict(filepath)
-
-    #delete file
-    try:
-        os.remove(file_path)
-    except Exception as e:
-        print(f"Error deleting file: {e}")
-        return jsonify({'success': False, 'error': 'Error deleting file'}), 500
+    prediction = predict(file)
 
     #package and return results to javascript
     result = {"message": "Python function called successfully", "data": prediction}
@@ -232,9 +201,39 @@ def classify():
     return jsonify(result)
 
 
+def update_pete_pin(description, icon, color):
+
+    url = 'https://ahoy-berlin.tryformation.com/objects/legacy/points/IJicTAN8eBClA1d1l8QUgA'
+
+    json_payload = {"latLon":{"lat":52.54129166036981,"lon":13.390654161760267},
+                    "connectedToId":"-HN8FcwaRyS7co7XIeIshw",
+                    "title": "Pete Pin",
+                    "keywords":[],
+                    "fieldValueTags":[],
+                    "iconCategory": icon,
+                    "color": color,
+                    "shape":"Circle"}
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJuemRKZVlKVjVMeWVMQXJFR1hyN1FBIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIwNzA2MTcsImlhdCI6MTcyMTk4NDIxNywid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.tlopgl-Ye3230bo_OCWilOAMH1LPM1EbETGSckgjX39in6TYTSMXMxWDYszhpith29ZZdS_hk7dKrOL_2Xv-Dg',
+    }
+
+    requests.put(url, json=json_payload, headers=headers)
+
+    url = 'https://ahoy-berlin.tryformation.com/objects/apply-changes'
+
+    json_payload = [{"objectId":"IJicTAN8eBClA1d1l8QUgA","changes":[{"type":"SetDescription","content":description}]}]
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJuemRKZVlKVjVMeWVMQXJFR1hyN1FBIiwid29ya3NwYWNlIjoiYWhveS1iZXJsaW4iLCJzY29wZSI6IkFjY2VzcyIsImlzcyI6InRyeWZvcm1hdGlvbi5jb20iLCJleHAiOjE3MjIwNzA2MTcsImlhdCI6MTcyMTk4NDIxNywid29ya3NwYWNlSWQiOiJJTWp3WW5wM25QU1didGRaRlVwckNBIn0.tlopgl-Ye3230bo_OCWilOAMH1LPM1EbETGSckgjX39in6TYTSMXMxWDYszhpith29ZZdS_hk7dKrOL_2Xv-Dg',
+    }
+
+    requests.post(url, json=json_payload, headers=headers)
+
+
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5500)
-
-
+    app.run(host='0.0.0.0', ssl_context=('server.crt', 'server.key'), port=5500)
