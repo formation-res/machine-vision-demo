@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Icon Generator</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+
+
+<body>
+  <div class="container">
+    <h2>Formation</h2>
+    <div class="button-group">
+      <input type="file" id="fileInput2" onclick="" accept=".jpg, .jpeg, .png">
+      <label for="fileInput2" id="select">SELECT A PHOTO</label>
+    </div>
+    <p id="status"></p>
+    <div id="message"></div>
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <div id="image">
+      <img id="uploadedImage" src="" alt="Uploaded Image Preview" style="display: none;">
+    </div>
+
+    <button onclick="goBack()">Back to map</button>
+    <script>
+        function goBack() {
+          window.history.back();
+        }
+    </script>
+  </div>
+</body>
+
+</html>

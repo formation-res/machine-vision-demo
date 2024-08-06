@@ -1,0 +1,98 @@
+:root {
+  --colors-formationBlack: 14 41 47;
+  --colors-formationWhite: 255 255 255;
+  --colors-formationGrey: 201 202 205;
+  --colors-highlight: 26 163 252;
+  --colors-blue: #1aa3fc;
+  --colors-green: #46ff63;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0; 
+  padding: 0;
+  background-color: rgb(201 202 205);
+  color: rgb(14, 41, 47);
+}
+
+h2 {
+  text-align: center;
+  margin-top: 20px;
+  color: rgb(14, 41, 47);
+}
+
+.container {
+  max-width: 77%;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 6px 12px rgba(0,0,0,.3);
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+
+div {
+  padding: 10px;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+button, label {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 20px;
+  background-color: #46ff63;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+}
+
+button:hover, label:hover {
+  background-color: rgb(201 202 205);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+#status {
+  margin: 10px 0;
+  font-style: italic;
+  color: var(--colors-formationBlack);
+}
+
+#message {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 18px;
+}
+
+#image img, img {
+  width: 88%;
+  max-width: 88%;
+  display: block;
+  margin: 15px auto;
+  border-radius: 10px;
+}
+
+canvas {
+  display: none;
+}
+
+#select {
+  font-weight: bold;
+}
