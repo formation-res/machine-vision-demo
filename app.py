@@ -5,7 +5,7 @@ from flask_cors import CORS
 import requests
 import base64
 import requests
-
+import json
 
 iconOptions = [
   'Location', 'Flag', 'Megaphone', 'Block', 'Bolt', 'Cluster', 'Coffee', 'Information',
@@ -63,7 +63,6 @@ def classifyWithOpenAI():
     if 'file' not in request.files:
         return jsonify({'success': False, 'error': 'No file part in the request'}), 400
     
-
     file = request.files['file']
     objectId = request.form['objectId']
     workspace = request.form['workspace']
@@ -79,13 +78,15 @@ def classifyWithOpenAI():
     return jsonify(result)
 
 def update_pin(description, icon, color, keywords, objectId, workspace, workspaceId):
+   
+    apiToken = {formationapitoken}
     
     #get original info about the pin
     url = "https://api.tryformation.com/objects/" + objectId
     json_payload = [{"id": objectId}]
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer {apitoken}',
+        'Authorization': 'Bearer ' + apiToken,
     }
     original = requests.get(url=url, headers=headers)
     print("code: ", original.status_code)
@@ -109,73 +110,13 @@ def update_pin(description, icon, color, keywords, objectId, workspace, workspac
                     "shape":originalShape}
     requests.put(url, json=json_payload, headers=headers)
 
-    #update description (currently always gives a blank description)
+    #update description
     url = 'https://ahoy-berlin.tryformation.com/objects/apply-changes'
 
     json_payload = [{"objectId":objectId,"changes":[{"type":"SetDescription","content":description}]}]
     
     requests.post(url, json=json_payload, headers=headers)
     
-
-def update_pete_pin(description, icon, color, keywords):
-
-    url = 'https://ahoy-berlin.tryformation.com/objects/legacy/points/IJicTAN8eBClA1d1l8QUgA'
-
-    json_payload = {"latLon":{"lat":52.54129166036981,"lon":13.390654161760267},
-                    "connectedToId":"-HN8FcwaRyS7co7XIeIshw",
-                    "title": "Pete Pin",
-                    "keywords":keywords,
-                    "fieldValueTags":[],
-                    "iconCategory": icon,
-                    "color": color,
-                    "shape":"Circle"}
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer {apitoken}'
-    }
-
-    requests.put(url, json=json_payload, headers=headers)
-
-    url = 'https://ahoy-berlin.tryformation.com/objects/apply-changes'
-
-    json_payload = [{"objectId":"IJicTAN8eBClA1d1l8QUgA","changes":[{"type":"SetDescription","content":description}]}]
-
-    requests.post(url, json=json_payload, headers=headers)
-
-
-def update_sophie_pin(description, icon, color, keywords):
-
-    url = 'https://ahoy-berlin.tryformation.com/objects/legacy/points/pWUACfAPQ6Z0wOUNj51iig'
-
-    json_payload = {"latLon":{"lat":52.541101005969497,"lon":13.390478414663676},
-                    "connectedToId":"-HN8FcwaRyS7co7XIeIshw",
-                    "title":"testing door",
-                    "keywords":keywords,
-                    "fieldValueTags":[],
-                    "iconCategory":icon,
-                    "color":color,
-                    "shape":"Heart"}
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer {apitoken}',
-    }
-
-    requests.put(url, json=json_payload, headers=headers)
-
-    url = 'https://ahoy-berlin.tryformation.com/objects/apply-changes'
-
-    json_payload = [{"objectId":"pWUACfAPQ6Z0wOUNj51iig","changes":[{"type":"SetDescription","content":description}]}]
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer {apitoken}',
-    }
-
-    requests.post(url, json=json_payload, headers=headers)
-
-
 
 def predictWithOpenAi(file_storage, objectId, workspace, workspaceId):
 
@@ -190,7 +131,7 @@ def predictWithOpenAi(file_storage, objectId, workspace, workspaceId):
     base64_image = base64.b64encode(image_data).decode('utf-8') 
 
     #get OpenAI response
-    api_key = {your api key}
+    api_key = {your API key}
 
     headers = {
       "Content-Type": "application/json",
@@ -198,6 +139,7 @@ def predictWithOpenAi(file_storage, objectId, workspace, workspaceId):
     }
 
     prompt = (
+        "I need a JSON file with the following strings: Color, Icon, and Description. I also need a list of keywords in the JSON."
         "Here is a list of colors: LightGrey, Grey, Black, LightGreen, LightGreenAlt, Green, GreenAlt, "
         "DarkGreen, AquaMarine, Turquoise, LightBlue, LightBlueAlt, Blue, DarkBlue, Yellow, Orange, DarkOrange, "
         "Red, DarkRed, DarkMagenta, White, BlueMidnight, BlueSky, BlueLavender, GraySilver, GraySteel, GraySlate, "
@@ -219,13 +161,13 @@ def predictWithOpenAi(file_storage, objectId, workspace, workspaceId):
         "FolderMedic, Syringe, BandAids, BloodPressure, Cardiogram, EyeDropper, HospitalBed, HospitalBedAlt, Lifter, ScaleAnalog, Pills, PillsBottle, PillsBox, HandTruck, "
         "ScaleDigital, ShoppingCart, Stethoscope, Thermostat, UpDown, Dingo, Eagle, Multi, Patriot, Wolf, Axle, WaitAT, WaitET, Gears, Engine, Zone, Tag, Cake, BirthdayCake, "
         "Cheese, Beer, Pint, Wineglass, Box, Microphone, Sausage, Music, SmileyGood, SmileyAlright, SmileyNotGood, SmileyHappy, SmileyAfraid. Choose one icon from this list of icons "
-        "to represent this image, or choose 'Location' if you are not sure. If there is any major and relevant text in the image, including and limited to license plates, labels, and codes,"
-        "please respond only the most important text (from the given options). For example, the text should be in a format similar to this: '1ABC234'. If there is too much relevant text (over 5 words), do not provide any text."
-        "If none of the text is much more important than the rest of the image, do not provide any text. This text should generally be no more than 2 words long. Lastly, come up with exactly 10 keywords that describe this image. "
-        "If there is no relevant text or too many details, do not include the text in the response. If there is relevant text, include it after the icon and color. Respond exactly like this: 'Icon: ', the icon "
-        "chosen from the given list, 'Color: ', the color chosen from the given list, if there is any relevant text, it should go here. then the 10 keywords should follow immediately. Everything should be separated by a "
-        "comma, and there should be no new lines (\\n) in the response."
+        "to represent this image, or choose 'Location' if you are not sure. Also, write a short description of the focus of the image as if it was a caption. Lastly, "
+        "write 10 important words or phrases describing the image: these should include any extremely relevant text present in the image, including but not limited to "
+	" container codes, titles, license plates. All of this, including the color, icon, description, and words/phrases should be included in a JSON file. "
+	"only return this JSON file without ``` at the start and finish. The output should have no extraneous grave accent symbols."
+
     )
+
 
     payload = {
       "model": "gpt-4o",
@@ -249,46 +191,54 @@ def predictWithOpenAi(file_storage, objectId, workspace, workspaceId):
       "max_tokens": 300
     }
 
-    print('hihi1')
+    print('sending OpenAI request')
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    print('hihi')
+    print('recieved OpenAI response')
 
-    print(response)
-
-    #response string to be cut
-    input_string = response.json()['choices'][0]['message']['content']
-    print("response: ", input_string)
-    #separate response
-    parts = input_string.split(', ')
     
-    icon = parts[0].replace('Icon: ', '')
-    color = parts[1].replace('Color: ', '')
-    keyword1 = parts[2].replace('Keywords: ', '')
+    # Parse the JSON data
+    input_string = response.json()['choices'][0]['message']['content']
+    if input_string.startswith('```json') and input_string.endswith('```'):
+        input_string = input_string[7:-3].strip()
+    print("response: ", input_string) 
+    
+    data = json.loads(input_string)
+
+    if (data['Color']):
+        Color = data['Color']
+    else:
+        Color = data['color']
+    if (data['Icon']):
+        Icon = data['Icon']
+    else:
+        Icon = data['icon']
+    if (data['Description']):
+        Description = data['Description']
+    else:
+        Description = data['description']
+    if (data['Keywords']):
+        Keywords = data['Keywords']
+    else:
+        Keywords = data['keywords']
 
     # Checking for made-up icons/colors
-    if icon not in iconOptions:
-        print("invalid icon ", icon, " switching to default.")
-        icon = "Default"
+    if Icon not in iconOptions:
+        print("invalid icon ", Icon, " switching to default.")
+        Icon = "Default"
     
-    if color not in colorOptions:
-        print("invalid color ", color, " switching to default.")
-        color = "Default"
-
-    # Extract keywords from the remaining parts
-    keywords = parts[3:]
-    result = [icon, color, keyword1] + keywords
-
-    #update pin
-    update_pin("", icon, color, [keyword1] + keywords, objectId, workspace, workspaceId)
-    #update_sophie_pin("", icon, color, [keyword1] + keywords)
-    print(icon, color)
+    if Color not in colorOptions:
+        print("invalid color ", Color, " switching to default.")
+        Color = "Default"
     
-    result_display = "Icon selected: " + icon + "<br>Color selected: " + color + "<br>Keywords selected: " + keyword1
-    for word in keywords:
-        result_display = result_display + ", " + word
-
+    #write display for html page
+    result_display = "Icon: " + Icon + "<br>Color: " + Color + "<br>Description: " + Description + "<br>Keywords: "
+    for word in Keywords:
+        result_display = result_display + word + ", "
+    result_display = result_display[0:-2]
     
-
+    #update Formation pin 
+    update_pin(Description, Icon, Color, Keywords, objectId, workspace, workspaceId)
+    
     return result_display
 
 

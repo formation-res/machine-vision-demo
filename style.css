@@ -7,6 +7,12 @@
   --colors-green: #46ff63;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
 * {
   box-sizing: border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -20,13 +26,19 @@ body {
   color: rgb(14, 41, 47);
 }
 
+.container {
+    min-height: calc(100vh - 71px);
+    padding-bottom: 20px;
+}
+
 h2 {
   text-align: center;
   margin-top: 20px;
   color: rgb(14, 41, 47);
+  font-weight: normal;
 }
 
-.container {
+.mainar {
   max-width: 77%;
   margin: 0 auto;
   padding: 20px;
@@ -95,4 +107,23 @@ canvas {
 
 #select {
   font-weight: bold;
+}
+
+#backbtn {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+footer {
+  background-color: #fff;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;    
+}
+
+footer p {
+  margin: 0;
+  font-size: 14px;
 }

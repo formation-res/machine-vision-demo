@@ -12,25 +12,32 @@
 
 <body>
   <div class="container">
-    <h2>Formation</h2>
-    <div class="button-group">
-      <input type="file" id="fileInput2" onclick="" accept=".jpg, .jpeg, .png">
-      <label for="fileInput2" id="select">SELECT A PHOTO</label>
-    </div>
-    <p id="status"></p>
-    <div id="message"></div>
-    <canvas id="canvas" width="320" height="240"></canvas>
-    <div id="image">
-      <img id="uploadedImage" src="" alt="Uploaded Image Preview" style="display: none;">
-    </div>
-
-    <button onclick="goBack()">Back to map</button>
-    <script>
-        function goBack() {
-          window.history.back();
-        }
-    </script>
+   <div class="mainar">
+     <h2>F O R M A T I O N</h2>
+     <div class="button-group">
+       <input type="file" id="fileInput" onclick="" accept=".jpg, .jpeg, .png">
+       <label for="fileInput" id="select">SELECT A PHOTO</label>
+     </div>
+     <p id="status"></p>
+     <div id="message"></div>
+     <canvas id="canvas" width="320" height="240"></canvas>
+     <div id="image">
+       <img id="uploadedImage" src="" alt="Uploaded Image Preview" style="display: none;">
+     </div>
+ 
+     <button id="backbtn" onclick="goBack()">BACK</button>
+     <script>
+         function goBack() {
+           window.history.back();
+         }
+     </script>
+   </div>
   </div>
+
+  <footer>
+    <p>Experimental AI Functionality (from the interns)</p>
+  </footer>
 </body>
 
 </html>
+
