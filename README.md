@@ -26,7 +26,7 @@ Since this demo runs within FORMATION's servers, installation and setup instruct
 
 ## Video Demonstration
 
-A video demonstrating the project is available [here](#).
+https://github.com/user-attachments/assets/ca8413fd-d785-4b18-bf00-f4e8a40483a6
 
 ## Contributors
 
